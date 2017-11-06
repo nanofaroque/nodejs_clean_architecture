@@ -1,5 +1,5 @@
 'use strict';
-var interactor = require('../interactors/interactor');
+const interactor = require('../interactors/interactor');
 class UserInteractor extends interactor {
     constructor() {
         super();
