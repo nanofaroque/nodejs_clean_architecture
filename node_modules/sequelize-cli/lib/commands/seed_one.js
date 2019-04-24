@@ -16,23 +16,21 @@ var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.builder = function (yargs) {
-  return (0, _yargs._baseOptions)(yargs).option('seed', {
-    describe: 'List of seed files',
-    type: 'array'
-  }).help().argv;
-};
+exports.builder = yargs => (0, _yargs._baseOptions)(yargs).option('seed', {
+  describe: 'List of seed files',
+  type: 'array'
+}).argv;
 
-exports.handler = function () {
+exports.handler = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (args) {
-    var command = args._[0];
+    const command = args._[0];
 
     // legacy, gulp used to do this
     yield _helpers2.default.config.init();
 
     // filter out cmd names
     // for case like --seeders-path seeders --seed seedPerson.js db:seed
-    var seeds = (args.seed || []).filter(function (name) {
+    const seeds = (args.seed || []).filter(function (name) {
       return name !== 'db:seed' && name !== 'db:seed:undo';
     }).map(function (file) {
       return _path2.default.basename(file);
@@ -62,4 +60,4 @@ exports.handler = function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}();
+})();

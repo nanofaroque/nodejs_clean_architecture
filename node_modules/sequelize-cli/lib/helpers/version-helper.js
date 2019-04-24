@@ -10,7 +10,7 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var packageJson = require(_path2.default.resolve(__dirname, '..', '..', 'package.json'));
+const packageJson = require(_path2.default.resolve(__dirname, '..', '..', 'package.json'));
 
 module.exports = {
   getCliVersion() {
@@ -30,7 +30,7 @@ module.exports = {
   },
 
   getDialectName() {
-    var config = this.getDialect();
+    const config = this.getDialect();
 
     if (config) {
       return {

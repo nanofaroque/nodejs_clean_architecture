@@ -16,12 +16,10 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.builder = function (yargs) {
-  return (0, _yargs._baseOptions)(yargs).help().argv;
-};
-exports.handler = function () {
+exports.builder = yargs => (0, _yargs._baseOptions)(yargs).argv;
+exports.handler = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (args) {
-    var command = args._[0];
+    const command = args._[0];
 
     // legacy, gulp used to do this
     yield _helpers2.default.config.init();
@@ -42,11 +40,11 @@ exports.handler = function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}();
+})();
 
 function seedAll(args) {
-  return (0, _migrator.getMigrator)('seeder', args).then(function (migrator) {
-    return migrator.pending().then(function (seeders) {
+  return (0, _migrator.getMigrator)('seeder', args).then(migrator => {
+    return migrator.pending().then(seeders => {
       if (seeders.length === 0) {
         _helpers2.default.view.log('No seeders found.');
         return;
@@ -54,14 +52,12 @@ function seedAll(args) {
 
       return migrator.up({ migrations: _lodash2.default.chain(seeders).map('file').value() });
     });
-  }).catch(function (e) {
-    return _helpers2.default.view.error(e);
-  });
+  }).catch(e => _helpers2.default.view.error(e));
 }
 
 function seedUndoAll(args) {
-  return (0, _migrator.getMigrator)('seeder', args).then(function (migrator) {
-    return (_helpers2.default.umzug.getStorage('seeder') === 'none' ? migrator.pending() : migrator.executed()).then(function (seeders) {
+  return (0, _migrator.getMigrator)('seeder', args).then(migrator => {
+    return (_helpers2.default.umzug.getStorage('seeder') === 'none' ? migrator.pending() : migrator.executed()).then(seeders => {
       if (seeders.length === 0) {
         _helpers2.default.view.log('No seeders found.');
         return;
@@ -69,7 +65,5 @@ function seedUndoAll(args) {
 
       return migrator.down({ migrations: _lodash2.default.chain(seeders).map('file').reverse().value() });
     });
-  }).catch(function (e) {
-    return _helpers2.default.view.error(e);
-  });
+  }).catch(e => _helpers2.default.view.error(e));
 }

@@ -12,9 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = {};
 
-_fs2.default.readdirSync(__dirname).filter(function (file) {
-  return file.indexOf('.') !== 0 && file.indexOf('index.js') === -1;
-}).forEach(function (file) {
+_fs2.default.readdirSync(__dirname).filter(file => file.indexOf('.') !== 0 && file.indexOf('index.js') === -1).forEach(file => {
   module.exports[file.replace('-helper.js', '')] = require(_path2.default.resolve(__dirname, file));
 });
 

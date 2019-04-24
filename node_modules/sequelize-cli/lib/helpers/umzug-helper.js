@@ -14,15 +14,15 @@ var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var storage = {
+const storage = {
   migration: 'sequelize',
   seeder: 'none'
 };
-var storageTableName = {
+const storageTableName = {
   migration: 'SequelizeMeta',
   seeder: 'SequelizeData'
 };
-var storageJsonName = {
+const storageJsonName = {
   migration: 'sequelize-meta.json',
   seeder: 'sequelize-data.json'
 };
@@ -37,7 +37,7 @@ module.exports = {
   },
 
   getStoragePath(type) {
-    var fallbackPath = _path2.default.join(process.cwd(), storageJsonName[type]);
+    const fallbackPath = _path2.default.join(process.cwd(), storageJsonName[type]);
 
     return this.getStorageOption(type + 'StoragePath', fallbackPath);
   },
@@ -46,13 +46,18 @@ module.exports = {
     return this.getStorageOption(type + 'StorageTableName', storageTableName[type]);
   },
 
+  getSchema(type) {
+    return this.getStorageOption(type + 'StorageTableSchema', undefined);
+  },
+
   getStorageOptions(type, extraOptions) {
-    var options = {};
+    const options = {};
 
     if (this.getStorage(type) === 'json') {
       options.path = this.getStoragePath(type);
     } else if (this.getStorage(type) === 'sequelize') {
       options.tableName = this.getTableName(type);
+      options.schema = this.getSchema(type);
     }
 
     _lodash2.default.assign(options, extraOptions);

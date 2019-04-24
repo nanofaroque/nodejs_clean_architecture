@@ -10,21 +10,21 @@ var _yargs2 = _interopRequireDefault(_yargs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var resolve = require('resolve').sync;
+const resolve = require('resolve').sync;
 
 
-var args = (0, _yargs2.default)().argv;
+const args = (0, _yargs2.default)().argv;
 
-var generic = {
-  getEnvironment: function getEnvironment() {
+const generic = {
+  getEnvironment: () => {
     return args.env || process.env.NODE_ENV || 'development';
   },
 
-  getSequelize: function getSequelize(file) {
-    var resolvePath = file ? _path2.default.join('sequelize', file) : 'sequelize';
-    var resolveOptions = { basedir: process.cwd() };
+  getSequelize: file => {
+    const resolvePath = file ? _path2.default.join('sequelize', file) : 'sequelize';
+    const resolveOptions = { basedir: process.cwd() };
 
-    var sequelizePath = void 0;
+    let sequelizePath;
 
     try {
       sequelizePath = require.resolve(resolvePath, resolveOptions);
@@ -40,7 +40,7 @@ var generic = {
     return require(sequelizePath);
   },
 
-  execQuery: function execQuery(sequelize, sql, options) {
+  execQuery: (sequelize, sql, options) => {
     if (sequelize.query.length === 2) {
       return sequelize.query(sql, options);
     } else {

@@ -12,8 +12,7 @@ class SqliteDialect extends AbstractDialect {
     super();
     this.sequelize = sequelize;
     this.connectionManager = new ConnectionManager(this, sequelize);
-    this.QueryGenerator = _.extend({}, QueryGenerator, {
-      options: sequelize.options,
+    this.QueryGenerator = new QueryGenerator({
       _dialect: this,
       sequelize
     });
@@ -24,14 +23,16 @@ SqliteDialect.prototype.supports = _.merge(_.cloneDeep(AbstractDialect.prototype
   'DEFAULT': false,
   'DEFAULT VALUES': true,
   'UNION ALL': false,
-  'IGNORE': ' OR IGNORE',
+  inserts: {
+    ignoreDuplicates: ' OR IGNORE'
+  },
   index: {
     using: false,
-    where: true
+    where: true,
+    functionBased: true
   },
   transactionOptions: {
-    type: true,
-    autocommit: false
+    type: true
   },
   constraints: {
     addConstraint: false,
@@ -39,7 +40,6 @@ SqliteDialect.prototype.supports = _.merge(_.cloneDeep(AbstractDialect.prototype
   },
   joinTableDependent: false,
   groupedLimit: false,
-  ignoreDuplicates: ' OR IGNORE',
   JSON: true
 });
 

@@ -12,15 +12,13 @@ var _helpers2 = _interopRequireDefault(_helpers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.builder = function (yargs) {
-  return (0, _yargs._baseOptions)(yargs).option('to', {
-    describe: 'Revert to the provided migration',
-    default: 0,
-    type: 'string'
-  }).help().argv;
-};
+exports.builder = yargs => (0, _yargs._baseOptions)(yargs).option('to', {
+  describe: 'Revert to the provided migration',
+  default: 0,
+  type: 'string'
+}).argv;
 
-exports.handler = function () {
+exports.handler = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (args) {
     // legacy, gulp used to do this
     yield _helpers2.default.config.init();
@@ -33,21 +31,15 @@ exports.handler = function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}();
+})();
 
 function migrationUndoAll(args) {
-  return (0, _migrator.getMigrator)('migration', args).then(function (migrator) {
-    return (0, _migrator.ensureCurrentMetaSchema)(migrator).then(function () {
-      return migrator.executed();
-    }).then(function (migrations) {
+  return (0, _migrator.getMigrator)('migration', args).then(migrator => {
+    return (0, _migrator.ensureCurrentMetaSchema)(migrator).then(() => migrator.executed()).then(migrations => {
       if (migrations.length === 0) {
         _helpers2.default.view.log('No executed migrations found.');
         process.exit(0);
       }
-    }).then(function () {
-      return migrator.down({ to: args.to || 0 });
-    });
-  }).catch(function (e) {
-    return _helpers2.default.view.error(e);
-  });
+    }).then(() => migrator.down({ to: args.to || 0 }));
+  }).catch(e => _helpers2.default.view.error(e));
 }

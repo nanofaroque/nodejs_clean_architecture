@@ -10,17 +10,15 @@ var _helpers2 = _interopRequireDefault(_helpers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.builder = function (yargs) {
-  return (0, _yargs._baseOptions)(yargs).option('force', {
-    describe: 'Will drop the existing config folder and re-create it',
-    type: 'boolean',
-    default: false
-  }).help().argv;
-};
+exports.builder = yargs => (0, _yargs._baseOptions)(yargs).option('force', {
+  describe: 'Will drop the existing config folder and re-create it',
+  type: 'boolean',
+  default: false
+}).argv;
 
-exports.handler = function () {
+exports.handler = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (argv) {
-    var command = argv._[0];
+    const command = argv._[0];
 
     switch (command) {
       case 'init':
@@ -53,7 +51,7 @@ exports.handler = function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}();
+})();
 
 function initConfig(args) {
   if (!_helpers2.default.config.configFileExists() || !!args.force) {

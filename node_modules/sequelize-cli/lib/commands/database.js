@@ -18,24 +18,42 @@ var _cliColor2 = _interopRequireDefault(_cliColor);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Sequelize = _helpers2.default.generic.getSequelize();
+const Sequelize = _helpers2.default.generic.getSequelize();
 
-exports.builder = function (yargs) {
-  return (0, _yargs._baseOptions)(yargs).help().argv;
-};
-exports.handler = function () {
+exports.builder = yargs => (0, _yargs._baseOptions)(yargs).option('charset', {
+  describe: 'Pass charset option to dialect, MYSQL only',
+  type: 'string'
+}).option('collate', {
+  describe: 'Pass collate option to dialect',
+  type: 'string'
+}).option('encoding', {
+  describe: 'Pass encoding option to dialect, PostgreSQL only',
+  type: 'string'
+}).option('ctype', {
+  describe: 'Pass ctype option to dialect, PostgreSQL only',
+  type: 'string'
+}).option('template', {
+  describe: 'Pass template option to dialect, PostgreSQL only',
+  type: 'string'
+}).argv;
+
+exports.handler = (() => {
   var _ref = (0, _bluebird.coroutine)(function* (args) {
-    var command = args._[0];
+    const command = args._[0];
 
     // legacy, gulp used to do this
     yield _helpers2.default.config.init();
 
-    var sequelize = getDatabaseLessSequelize();
-    var config = _helpers2.default.config.readConfig();
+    const sequelize = getDatabaseLessSequelize();
+    const config = _helpers2.default.config.readConfig();
 
     switch (command) {
       case 'db:create':
-        yield sequelize.query(`CREATE DATABASE ${sequelize.getQueryInterface().quoteIdentifier(config.database)}`, {
+        const options = (0, _lodash.pick)(args, ['charset', 'collate', 'encoding', 'ctype', 'template']);
+
+        const query = getCreateDatabaseQuery(sequelize, config, options);
+
+        yield sequelize.query(query, {
           type: sequelize.QueryTypes.RAW
         }).catch(function (e) {
           return _helpers2.default.view.error(e);
@@ -62,10 +80,29 @@ exports.handler = function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}();
+})();
+
+function getCreateDatabaseQuery(sequelize, config, options) {
+  switch (config.dialect) {
+    case 'postgres':
+    case 'postgres-native':
+      return 'CREATE DATABASE ' + sequelize.getQueryInterface().quoteIdentifier(config.database) + (options.encoding ? ' ENCODING = ' + sequelize.getQueryInterface().quoteIdentifier(options.encoding) : '') + (options.collate ? ' LC_COLLATE = ' + sequelize.getQueryInterface().quoteIdentifier(options.collate) : '') + (options.ctype ? ' LC_CTYPE = ' + sequelize.getQueryInterface().quoteIdentifier(options.ctype) : '') + (options.template ? ' TEMPLATE = ' + sequelize.getQueryInterface().quoteIdentifier(options.template) : '');
+
+    case 'mysql':
+      return 'CREATE DATABASE IF NOT EXISTS ' + sequelize.getQueryInterface().quoteIdentifier(config.database) + (options.charset ? ' DEFAULT CHARACTER SET ' + sequelize.getQueryInterface().quoteIdentifier(options.charset) : '') + (options.collate ? ' DEFAULT COLLATE ' + sequelize.getQueryInterface().quoteIdentifier(options.collate) : '');
+
+    case 'mssql':
+      return 'IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = N\'' + config.database + '\')' + ' BEGIN' + ' CREATE DATABASE ' + sequelize.getQueryInterface().quoteIdentifier(config.database) + (options.collate ? ' COLLATE ' + options.collate : '') + ' END;';
+      break;
+
+    default:
+      _helpers2.default.view.error(`Dialect ${config.dialect} does not support db:create / db:drop commands`);
+      return 'CREATE DATABASE ' + sequelize.getQueryInterface().quoteIdentifier(config.database);
+  }
+}
 
 function getDatabaseLessSequelize() {
-  var config = null;
+  let config = null;
 
   try {
     config = _helpers2.default.config.readConfig();

@@ -30,15 +30,15 @@ var _yargs2 = _interopRequireDefault(_yargs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var args = (0, _yargs2.default)().argv;
+const args = (0, _yargs2.default)().argv;
 
-var api = {
+const api = {
   config: undefined,
   rawConfig: undefined,
   error: undefined,
   init() {
-    return _bluebird2.default.resolve().then(function () {
-      var config = void 0;
+    return _bluebird2.default.resolve().then(() => {
+      let config;
 
       if (args.url) {
         config = api.parseDbUrl(args.url);
@@ -50,7 +50,7 @@ var api = {
         }
       }
       return config;
-    }).then(function (config) {
+    }).then(config => {
       if (typeof config === 'object' || config === undefined) {
         return config;
       } else if (config.length === 1) {
@@ -58,9 +58,9 @@ var api = {
       } else {
         return config();
       }
-    }).then(function (config) {
+    }).then(config => {
       api.rawConfig = config;
-    }).then(function () {
+    }).then(() => {
       // Always return the full config api
       return api;
     });
@@ -70,8 +70,8 @@ var api = {
       return _path2.default.resolve(process.cwd(), args.config);
     }
 
-    var defaultPath = _path2.default.resolve(process.cwd(), 'config', 'config.json');
-    var alternativePath = defaultPath.replace('.json', '.js');
+    const defaultPath = _path2.default.resolve(process.cwd(), 'config', 'config.json');
+    const alternativePath = defaultPath.replace('.json', '.js');
 
     return _index2.default.path.existsSync(alternativePath) ? alternativePath : defaultPath;
   },
@@ -111,7 +111,7 @@ var api = {
   },
 
   writeDefaultConfig() {
-    var configPath = _path2.default.dirname(api.getConfigFile());
+    const configPath = _path2.default.dirname(api.getConfigFile());
 
     if (!_index2.default.path.existsSync(configPath)) {
       _index2.default.asset.mkdirp(configPath);
@@ -122,7 +122,7 @@ var api = {
 
   readConfig() {
     if (!api.config) {
-      var env = _index2.default.generic.getEnvironment();
+      const env = _index2.default.generic.getEnvironment();
 
       if (api.rawConfig === undefined) {
         throw new Error('Error reading "' + api.relativeConfigFile() + '". Error: ' + api.error);
@@ -162,14 +162,14 @@ var api = {
   },
 
   filteredUrl(uri, config) {
-    var regExp = new RegExp(':?' + (config.password || '') + '@');
+    const regExp = new RegExp(':?' + (config.password || '') + '@');
     return uri.replace(regExp, ':*****@');
   },
 
   urlStringToConfigHash(urlString) {
     try {
-      var urlParts = _url2.default.parse(urlString);
-      var result = {
+      const urlParts = _url2.default.parse(urlString);
+      let result = {
         database: urlParts.pathname.replace(/^\//, ''),
         host: urlParts.hostname,
         port: urlParts.port,
@@ -191,7 +191,7 @@ var api = {
   },
 
   parseDbUrl(urlString) {
-    var config = api.urlStringToConfigHash(urlString);
+    let config = api.urlStringToConfigHash(urlString);
 
     config = _lodash2.default.assign(config, {
       dialect: config.protocol

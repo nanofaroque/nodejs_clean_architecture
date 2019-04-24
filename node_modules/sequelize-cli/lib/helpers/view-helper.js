@@ -18,21 +18,15 @@ var _yargs2 = _interopRequireDefault(_yargs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var args = (0, _yargs2.default)().argv;
+const args = (0, _yargs2.default)().argv;
 
 module.exports = {
   teaser() {
-    var versions = ['Node: ' + _index2.default.version.getNodeVersion(), 'CLI: ' + _index2.default.version.getCliVersion(), 'ORM: ' + _index2.default.version.getOrmVersion()];
+    const versions = ['Node: ' + _index2.default.version.getNodeVersion(), 'CLI: ' + _index2.default.version.getCliVersion(), 'ORM: ' + _index2.default.version.getOrmVersion()];
 
     this.log();
     this.log(_cliColor2.default.underline('Sequelize CLI [' + versions.join(', ') + ']'));
     this.log();
-
-    // Remove in v4
-    if (_index2.default.version.getOrmVersion().match(/^4./)) {
-      this.warn('This version of Sequelize CLI is not ' + 'fully compatible with Sequelize v4. ' + 'https://github.com/sequelize/cli#sequelize-support');
-      this.log();
-    }
   },
 
   log() {
@@ -40,7 +34,7 @@ module.exports = {
   },
 
   error(error) {
-    var message = error;
+    let message = error;
 
     if (error instanceof Error) {
       message = !args.debug ? error.message : error.stack;
@@ -62,14 +56,14 @@ module.exports = {
   },
 
   pad(s, smth) {
-    var margin = smth;
+    let margin = smth;
 
     if (_lodash2.default.isObject(margin)) {
       margin = Object.keys(margin);
     }
 
     if (Array.isArray(margin)) {
-      margin = Math.max.apply(null, margin.map(function (o) {
+      margin = Math.max.apply(null, margin.map(o => {
         return o.length;
       }));
     }
